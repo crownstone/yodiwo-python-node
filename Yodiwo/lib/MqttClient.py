@@ -3,7 +3,6 @@ import json
 import paho.mqtt.client as mqtt
 
 from Yodiwo.lib import PyNodeHelper
-from Yodiwo.lib.PyNodeHelper import Configuration
 from Yodiwo.lib.plegma.PlegmaApi import PlegmaApi, MqttMsg, eMsgFlags
 
 TAG = "mqttclient"
@@ -18,8 +17,8 @@ connack_codes = {"CONNACK_ACCEPTED": 0,
 
 
 class MqttClient(object):
-    def __init__(self):
-        self.config = Configuration()
+    def __init__(self, config):
+        self.config = config
         self.plegmaapi = PlegmaApi()
         self.syncId = 0
         self._on_PlegmaMsgArrived = None

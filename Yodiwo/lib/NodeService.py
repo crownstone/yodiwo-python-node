@@ -2,7 +2,7 @@ from Yodiwo.lib.MqttClient import MqttClient
 from Yodiwo.lib.plegma.Thing import Thing
 
 from Yodiwo.lib import PyNodeHelper
-from Yodiwo.lib.PyNodeHelper import Configuration, Converter
+from Yodiwo.lib.PyNodeHelper import Converter
 from Yodiwo.lib.plegma.Messages import *
 
 TAG = "NodeService"
@@ -10,10 +10,10 @@ TAG = "NodeService"
 
 class NodeService(object):
     ThingRevisionNumber = 0 # last synced revision number
-    def __init__(self):
+    def __init__(self, config):
         self.activePortKeys = {}  # list activePortKeys
         self._Things = {}  # dict thingkey -> Thing
-        self.config = Configuration()
+        self.config = config
         self.mqttclient = None
 
     # Start/Teardown
@@ -21,7 +21,7 @@ class NodeService(object):
     def Start(self, protocol):
         if protocol == PyNodeHelper.eMessagingProtocol.Mqtt:
             PyNodeHelper.LOG.Info(TAG, "Starting . . . MQTT")
-            self.mqttclient = MqttClient()
+            self.mqttclient = MqttClient(self.config)
             self.mqttclient._on_PlegmaMsgArrived = self.on_PlegmaMsgArrived
             self.mqttclient._on_PlegmaRspArrived = self.on_PlegmaRspArrived
             self.mqttclient._on_PlegmaReqArrived = self.on_PlegmaReqArrived

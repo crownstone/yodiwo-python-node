@@ -5,9 +5,9 @@ from Yodiwo.lib.NodeService import *
 # -------------------------------------Init Logger --------------------------------------------------------------------
 PyNodeHelper.LOG.Init()
 # -------------------------------------Read config.json ----------------------------------------------------------------
-config = PyNodeHelper.Configuration()
+config = PyNodeHelper.ConfigContainer().loadFile('config.json')
 # -------------------------------------Init NodeService ----------------------------------------------------------------
-nodeservice = NodeService()
+nodeservice = NodeService(config)
 # -------------------------------------Import things -------------------------------------------------------------------
 nodeservice.ImportThings(PyNodeHelper.ThingManager.CreateThings(config.nodekey.toString()))
 # -------------------------------------Start NodeService ---------------------------------------------------------------

@@ -1,11 +1,49 @@
 import json
 import logging
+import sys, os
 from enum import IntEnum
 
 from Yodiwo.lib.plegma.Keys import NodeKey, UserKey
 from Yodiwo.lib.plegma.Thing import Thing, ConfigParameter, ThingUIHints
 
 from Yodiwo.lib.plegma.Port import Port
+
+__location__ = sys.path[0]
+
+class ConfigContainer:
+    mqttbrokeraddress = None
+    mqttbrokercert = None
+    mqttbrokerusessl = None
+    nodesecretkey = None
+    nodename = None
+    nodekey = None
+    userkey  = None
+    
+    def __init__(self):
+        pass
+    
+    def loadFile(self, path):
+        fileHandle = open(os.path.join(__location__, path), 'r')
+        data = fileHandle.read()
+        fileHandle.close()
+        
+        configJson = json.load(data)
+        self.setData(configJson)
+    
+    def setData(self, configJson):
+        activeid = configJson["ActiveID"]
+        configs = configJson["Configs"]
+        activeconfig = configs[activeid]
+    
+        self.mqttbrokeraddress = activeconfig["MqttBrokerHostname"]
+        self.mqttbrokercert = activeconfig["MqttBrokerCertFile"]
+        self.mqttbrokerusessl = activeconfig["MqttUseSsl"]
+        self.nodesecretkey = activeconfig["NodeSecret"]
+        self.nodename = activeconfig["NodeName"]
+        self.nodekey = NodeKey()
+        self.nodekey.setKey(activeconfig["NodeKey"])
+    
+        self.userkey = UserKey(self.nodekey.key)
 
 
 class Configuration(object):
