@@ -42,7 +42,7 @@ class ConfigContainer:
         self.nodename = activeconfig["NodeName"]
         self.nodekey = NodeKey()
         self.nodekey.setKey(activeconfig["NodeKey"])
-    
+        
         self.userkey = UserKey(self.nodekey.key)
 
 
