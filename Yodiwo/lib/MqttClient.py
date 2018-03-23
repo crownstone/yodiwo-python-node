@@ -143,7 +143,7 @@ class MqttClient(object):
 
     def on_connect(self, client, userdata, flags, rc):
         PyNodeHelper.LOG.Info(TAG, "Connected with result code {0}".format(str(rc)))
-        PyNodeHelper.LOG.Info(TAG, "Connected with state {0}".format(str(self.client._state)))
+        PyNodeHelper.LOG.Info(TAG, "Connected with state {0}".format(str(self.client._state)))¢
         PyNodeHelper.LOG.Info(TAG, "Connected with connack message {0}".format(self.MqttMsgConnack(rc)))
         
         self.is_connected = True
