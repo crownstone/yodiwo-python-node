@@ -1,6 +1,5 @@
 from enum import IntEnum
 
-
 class IODirection(IntEnum):
     InputOutput = 1
     Output      = 2
