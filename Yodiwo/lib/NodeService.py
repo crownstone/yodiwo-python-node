@@ -1,9 +1,12 @@
 from Yodiwo.lib.MqttClient import MqttClient
+from Yodiwo.lib.plegma.EnumsApi import eNodeCapa, ePortStateOperation, eNodeType, eThingsOperation
 from Yodiwo.lib.plegma.Thing import Thing
 
 from Yodiwo.lib import PyNodeHelper
 from Yodiwo.lib.PyNodeHelper import Converter
 from Yodiwo.lib.plegma.Messages import *
+
+
 
 TAG = "NodeService"
 
@@ -96,7 +99,7 @@ class NodeService(object):
 
     def HandleNodeInfoReq(self):
         PyNodeHelper.LOG.Info(TAG, "Handling started")
-        self.UpdateRevNum();
+        self.UpdateRevNum()
         return NodeInfoRsp(Name=self.config.nodename, SeqNo=0, ThingsRevNum=self.__class__.ThingRevisionNumber, Type=eNodeType.Generic,
                            Capabilities=eNodeCapa.nodeCapaNone)
 
@@ -131,14 +134,17 @@ class NodeService(object):
     def HandlePortStateSet(self, msg):
         PyNodeHelper.LOG.Info(TAG, "Handling started")
         for portstate in msg.PortStates:
-            portstate = PortState(**portstate)
-            pk = portstate.PortKey
-            thingKey = Converter.PortkeyToThingkey(pk)
-            thing = self._Things[thingKey]
-            for p in thing.Ports:
-                if p.PortKey == pk:
-                    p.State = portstate.State
-            self._Things[thingKey] = thing
+            portstate = PortState.fromCloud(portstate)
+            if portstate is not None:
+                pk = portstate.PortKey
+                thingKey = Converter.PortkeyToThingkey(pk)
+                thing = self._Things[thingKey]
+                for p in thing.Ports:
+                    if p.PortKey == pk:
+                        p.State = portstate.State
+                self._Things[thingKey] = thing
+            else:
+                PyNodeHelper.LOG.Error(TAG, "Invalid PortState [missing attributes]. Ignoring...")
 
         PyNodeHelper.LOG.Info(TAG, "Handling finished")
         return GenericRsp(IsSuccess=True)
@@ -154,13 +160,16 @@ class NodeService(object):
     def HandlePortEventMsg(self, msg):
         PyNodeHelper.LOG.Info(TAG, "Handling started")
         for portevent in msg.PortEvents:
-            portevent = PortEvent(**portevent)
-            pk = portevent.PortKey
-            thingKey = Converter.PortkeyToThingkey(pk)
-            thing = self._Things[thingKey]
-            for p in thing.Ports:
-                if p.PortKey == pk:
-                    p.State = portevent.State
+            portevent = PortEvent.fromCloud(portevent)
+            if portevent is not None:
+                pk = portevent.PortKey
+                thingKey = Converter.PortkeyToThingkey(pk)
+                thing = self._Things[thingKey]
+                for p in thing.Ports:
+                    if p.PortKey == pk:
+                        p.State = portevent.State
+            else:
+                PyNodeHelper.LOG.Error(TAG,"Invalid PortEvent [missing attributes]. Ignoring...")
 
         PyNodeHelper.LOG.Info(TAG, "Handling finished")
 
